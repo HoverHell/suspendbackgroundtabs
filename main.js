@@ -68,7 +68,7 @@ let Observer =
       return;
 
     let browser = window.gBrowser.getBrowserForDocument(subject.document);
-    if (!browser || !("__sbtSuspendedBy" in browser))
+    if (!browser || !("__sbtSuspended" in browser))
       return;
 
     // New document loaded into a suspended tab, suspend it
@@ -88,23 +88,22 @@ function onTabModified(event)
 
 function suspendBrowser(browser, suspend, force)
 {
-  if (!force && ("__sbtSuspendedBy" in browser) == suspend)
+  if (!force && ("__sbtSuspended" in browser) == suspend)
     return;   // Nothing to do
 
+  let utils = browser.contentWindow.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+                     .getInterface(Components.interfaces.nsIDOMWindowUtils);
   if (suspend)
   {
-    let utils = browser.contentWindow.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-                       .getInterface(Components.interfaces.nsIDOMWindowUtils);
     utils.suppressEventHandling(true);
     utils.suspendTimeouts();
-    browser.__sbtSuspendedBy = utils;
+    browser.__sbtSuspended = true;
   }
   else
   {
-    let utils = browser.__sbtSuspendedBy;
     utils.suppressEventHandling(false);
     utils.resumeTimeouts();
-    delete browser.__sbtSuspendedBy;
+    delete browser.__sbtSuspended;
   }
 }
 
