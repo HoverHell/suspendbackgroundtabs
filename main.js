@@ -95,13 +95,11 @@ function suspendBrowser(browser, suspend, force)
                      .getInterface(Components.interfaces.nsIDOMWindowUtils);
   if (suspend)
   {
-    utils.suppressEventHandling(true);
     utils.suspendTimeouts();
     browser.__sbtSuspended = true;
   }
   else
   {
-    utils.suppressEventHandling(false);
     utils.resumeTimeouts();
     delete browser.__sbtSuspended;
   }
