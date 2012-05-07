@@ -19,6 +19,7 @@ new WindowObserver({
       suspendBrowser(browsers[i], browsers[i] != window.gBrowser.selectedBrowser);
 
     window.gBrowser.tabContainer.addEventListener("TabOpen", onTabModified, false);
+    window.gBrowser.tabContainer.addEventListener("TabClose", onTabModified, false);
     window.gBrowser.tabContainer.addEventListener("TabAttrModified", onTabModified, false);
   },
 
@@ -32,6 +33,7 @@ new WindowObserver({
       suspendBrowser(browsers[i], false);
 
     window.gBrowser.tabContainer.removeEventListener("TabOpen", onTabModified, false);
+    window.gBrowser.tabContainer.removeEventListener("TabClose", onTabModified, false);
     window.gBrowser.tabContainer.removeEventListener("TabAttrModified", onTabModified, false);
   }
 });
@@ -83,7 +85,7 @@ function onTabModified(event)
 {
   let tab = event.target;
   let window = tab.ownerDocument.defaultView;
-  suspendBrowser(window.gBrowser.getBrowserForTab(tab), tab != window.gBrowser.selectedTab);
+  suspendBrowser(window.gBrowser.getBrowserForTab(tab), event.type != "TabClose" && tab != window.gBrowser.selectedTab);
 }
 
 function suspendBrowser(browser, suspend, force)
@@ -95,11 +97,13 @@ function suspendBrowser(browser, suspend, force)
                      .getInterface(Components.interfaces.nsIDOMWindowUtils);
   if (suspend)
   {
+    utils.suppressEventHandling(true);
     utils.suspendTimeouts();
     browser.__sbtSuspended = true;
   }
   else
   {
+    utils.suppressEventHandling(false);
     utils.resumeTimeouts();
     delete browser.__sbtSuspended;
   }
