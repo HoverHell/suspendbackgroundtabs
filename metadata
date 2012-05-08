@@ -1,6 +1,7 @@
 [general]
 id=suspendbackgroundtabs@adblockplus.org
 basename=suspendbackgroundtabs
+branchname=SUSPENDBACKGROUNDTABS
 version=1.0a
 author=Wladimir Palant
 restartless=true
