@@ -4,8 +4,13 @@ basename=suspendbackgroundtabs
 branchname=SUSPENDBACKGROUNDTABS
 version=1.0.1a
 author=Wladimir Palant
+options=chrome://suspendbackgroundtabs/content/settings.xul
+optionsType=2
 restartless=true
 nojar=true
+
+[contributors]
+1=Christian Sonne
 
 [homepage]
 default=https://addons.mozilla.org/addon/suspend-background-tabs/

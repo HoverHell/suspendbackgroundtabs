@@ -1,0 +1,2 @@
+content   suspendbackgroundtabs chrome/content/
+locale    suspendbackgroundtabs {{LOCALE}} chrome/locale/{{LOCALE}}/

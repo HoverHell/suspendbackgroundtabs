@@ -7,11 +7,37 @@
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
+function isBrowserWindow(window)
+{
+  return ("gBrowser" in window) && ("browsers" in window.gBrowser);
+}
+
+let {Prefs} = require("prefs");
+Prefs.addListener(function(name)
+{
+  if (name == "ignorePinned")
+  {
+    // Re-check all pinned tabs in all windows
+    let enumerator = Services.wm.getEnumerator(null);
+    while (enumerator.hasMoreElements())
+    {
+      let window = enumerator.getNext().QueryInterface(Ci.nsIDOMWindow);
+      if (!isBrowserWindow(window))
+        return;
+
+      let tabs = window.gBrowser.tabs;
+      for (let i = 0; i < tabs.length; i++)
+        if (tabs[i].pinned)
+          onTabModified({target: tabs[i], type: "TabAttrModified"});
+    }
+  }
+});
+
 let {WindowObserver} = require("windowObserver");
 new WindowObserver({
   applyToWindow: function(window)
   {
-    if (!("gBrowser" in window) || !("browsers" in window.gBrowser))
+    if (!isBrowserWindow(window))
       return;
 
     let browsers = window.gBrowser.browsers;
@@ -21,11 +47,13 @@ new WindowObserver({
     window.gBrowser.tabContainer.addEventListener("TabOpen", onTabModified, false);
     window.gBrowser.tabContainer.addEventListener("TabClose", onTabModified, false);
     window.gBrowser.tabContainer.addEventListener("TabAttrModified", onTabModified, false);
+    window.gBrowser.tabContainer.addEventListener("TabPinned", onTabModified, false);
+    window.gBrowser.tabContainer.addEventListener("TabUnpinned", onTabModified, false);
   },
 
   removeFromWindow: function(window)
   {
-    if (!("gBrowser" in window) || !("browsers" in window.gBrowser))
+    if (!isBrowserWindow(window))
       return;
 
     let browsers = window.gBrowser.browsers;
@@ -35,6 +63,8 @@ new WindowObserver({
     window.gBrowser.tabContainer.removeEventListener("TabOpen", onTabModified, false);
     window.gBrowser.tabContainer.removeEventListener("TabClose", onTabModified, false);
     window.gBrowser.tabContainer.removeEventListener("TabAttrModified", onTabModified, false);
+    window.gBrowser.tabContainer.removeEventListener("TabPinned", onTabModified, false);
+    window.gBrowser.tabContainer.removeEventListener("TabUnpinned", onTabModified, false);
   }
 });
 
@@ -81,11 +111,22 @@ let Observer =
 };
 Observer.init();
 
+function shouldSuspendTab(window, tab)
+{
+  if (tab == window.gBrowser.selectedTab)
+    return false;
+
+  if (Prefs.ignorePinned && tab.pinned)
+    return false;
+
+  return true;
+}
+
 function onTabModified(event)
 {
   let tab = event.target;
   let window = tab.ownerDocument.defaultView;
-  suspendBrowser(window.gBrowser.getBrowserForTab(tab), event.type != "TabClose" && tab != window.gBrowser.selectedTab);
+  suspendBrowser(window.gBrowser.getBrowserForTab(tab), event.type != "TabClose" && shouldSuspendTab(window, tab));
 }
 
 function suspendBrowser(browser, suspend, force)
