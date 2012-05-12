@@ -2,7 +2,7 @@
 id=suspendbackgroundtabs@adblockplus.org
 basename=suspendbackgroundtabs
 branchname=SUSPENDBACKGROUNDTABS
-version=1.0.1a
+version=1.0.1
 author=Wladimir Palant
 options=chrome://suspendbackgroundtabs/content/settings.xul
 optionsType=2
