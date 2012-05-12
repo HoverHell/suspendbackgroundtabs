@@ -96,7 +96,7 @@ let Observer =
                         .rootTreeItem
                         .QueryInterface(Ci.nsIInterfaceRequestor)
                         .getInterface(Ci.nsIDOMWindow);
-    if (window.document.readyState != "complete" || !("gBrowser" in window))
+    if (window.document.readyState != "complete" || !isBrowserWindow(window))
       return;
 
     let browser = window.gBrowser.getBrowserForDocument(subject.document);
