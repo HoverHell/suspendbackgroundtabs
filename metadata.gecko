@@ -5,6 +5,7 @@ version=1.0.2a
 author=Wladimir Palant
 options=chrome://suspendbackgroundtabs/content/settings.xul
 optionsType=2
+needMultiprocessShims=true
 
 [contributors]
 1=Christian Sonne
