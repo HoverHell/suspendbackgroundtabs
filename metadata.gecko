@@ -1,5 +1,5 @@
 [general]
-id=suspendbackgroundtabs@adblockplus.org
+id=suspendbackgroundtabs@adblockplus.hoverhell.org
 basename=suspendbackgroundtabs
 version=1.0.2a
 author=Wladimir Palant
@@ -9,10 +9,11 @@ needMultiprocessShims=true
 
 [contributors]
 1=Christian Sonne
+2=HoverHell
 
 [homepage]
-default=https://addons.mozilla.org/addon/suspend-background-tabs/
+default=https://addons.mozilla.hoverhell.org/addon/suspend-background-tabs/
 
 [compat]
-firefox=16.0/30.0
+firefox=16.0/47.0
 seamonkey=2.13/2.27
